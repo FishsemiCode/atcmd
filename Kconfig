@@ -1,0 +1,26 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the NuttX tools repository.
+#
+
+config SERVICES_ATCMD
+	bool "Services ATCMD"
+	default n
+	---help---
+		Enable the ATCMD services
+
+if SERVICES_ATCMD
+
+config SERVICES_ATCMD_PRIORITY
+	int "atcmd task priority"
+	default 230
+	---help---
+		The priority for atcmd task.
+
+config SERVICES_ATCMD_STACKSIZE
+	int "atcmd task stack size"
+	default 2048
+	---help---
+	The stack size allocated for the atcmd task.
+
+endif # SERVICES_ATCMD

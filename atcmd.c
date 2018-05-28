@@ -266,9 +266,13 @@ int main(int argc, char *argv[])
 int atcmd_main(int argc, char *argv[])
 #endif
 {
-  return task_create(argv[0],
+  int ret;
+
+  ret = task_create(argv[0],
           CONFIG_SERVICES_ATCMD_PRIORITY,
           CONFIG_SERVICES_ATCMD_STACKSIZE,
           atcmd_daemon,
           argv + 1);
+
+  return ret > 0 ? 0 : ret;
 }

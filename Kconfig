@@ -13,7 +13,7 @@ if SERVICES_ATCMD
 
 config SERVICES_ATCMD_PRIORITY
 	int "atcmd task priority"
-	default 230
+	default 80
 	---help---
 		The priority for atcmd task.
 

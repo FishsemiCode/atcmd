@@ -104,6 +104,7 @@ static const struct atcmd_table_s g_atcmd[] =
   {"AT+IPR",    atcmd_ipr_handler,      ATCMD_UART_SERIAL},
   {"AT+PF",     atcmd_files_handler,    ATCMD_UART_SERIAL},
   {"AT+X",      atcmd_remote_handler,   ATCMD_UART_APP},
+  {"AT",        atcmd_remote_handler,   ATCMD_UART_MODEM},
 };
 
 /****************************************************************************
@@ -136,7 +137,7 @@ static int atcmd_serial_handler(struct atcmd_uart_s *serial)
       end[0] = '\0';
 
       pbuf = strcasestr(pbuf, "at");
-      if (!pbuf || strlen(pbuf) < 3)
+      if (!pbuf || strlen(pbuf) < 2)
         {
           pbuf = end + 1;
           continue;

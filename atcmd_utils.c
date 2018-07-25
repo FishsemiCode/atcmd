@@ -45,7 +45,7 @@
 
 ssize_t atcmd_safe_write(int fd, const void *buf, size_t len)
 {
-  ssize_t once, written = 0;
+  ssize_t once = 0, written = 0;
 
   while (len > 0)
     {

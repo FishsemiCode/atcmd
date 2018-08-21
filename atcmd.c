@@ -40,6 +40,8 @@
 
 #include <nuttx/config.h>
 
+#include <nuttx/serial/pty.h>
+
 #include <fcntl.h>
 #include <poll.h>
 #include <sched.h>
@@ -91,7 +93,7 @@ static const char *g_names[ATCMD_NUARTS] =
   "/dev/ttyS0",     // 0, ATCMD_UART_SERIAL
   "/dev/ttyGPS",    // 1, ATCMD_UART_GPS
   "/dev/ttyAT",     // 2, ATCMD_UART_MODEM
-  "/dev/ttyATAP",   // 3, ATCMD_UART_APP
+  "/dev/pty0",      // 3, ATCMD_UART_APP
 };
 
 static const struct atcmd_table_s g_atcmd[] =
@@ -188,6 +190,8 @@ static int atcmd_daemon(int argc, char *argv[])
 {
   struct pollfd fds[ATCMD_NUARTS];
   int i, ret = -EINVAL;
+
+  pty_register(0);
 
   memset(fds, 0, sizeof(fds));
 

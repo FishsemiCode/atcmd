@@ -98,6 +98,7 @@ static const char *g_names[ATCMD_NUARTS] =
 
 static const struct atcmd_table_s g_atcmd[] =
 {
+  {"AT+NPING",  atcmd_nping_handler,    ATCMD_UART_SERIAL},
   {"AT+PCOAP",  atcmd_coap_handler,     ATCMD_UART_SERIAL},
   {"AT+PHTTP",  atcmd_http_handler,     ATCMD_UART_SERIAL},
   {"AT+PGNSS",  atcmd_remote_handler,   ATCMD_UART_GPS},

@@ -54,7 +54,7 @@
  * Pre-processor definitions
  ****************************************************************************/
 
-#define ATCMD_BUFMAX            256
+#define ATCMD_BUFMAX            1024
 
 #define ATCMD_UART_SERIAL        0
 #define ATCMD_UART_GPS           1

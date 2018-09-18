@@ -40,6 +40,7 @@
 
 #include <nuttx/config.h>
 
+#include <nuttx/ascii.h>
 #include <nuttx/serial/pty.h>
 
 #include <fcntl.h>
@@ -118,7 +119,14 @@ static void atcmd_remote_handler(int fd, const char *cmd, char *param)
 {
   int len = strlen(param);
 
-  param[len++] = '\r';
+  if (cmd)
+    {
+      param[len++] = ASCII_SUB;
+    }
+  else
+    {
+      param[len++] = '\r';
+    }
 
   atcmd_safe_write(fd, param, len);
 }
@@ -131,40 +139,52 @@ static int atcmd_serial_handler(struct atcmd_uart_s *serial)
   pbuf = serial->buf;
   while (1)
     {
-      end = strchr(pbuf, '\r');
-      if (end == NULL)
+      if ((end = strchr(pbuf, '\r')) != NULL)
+        {
+          /* Process AT cmd */
+
+          end[0] = '\0';
+
+          pbuf = strcasestr(pbuf, "at");
+          if (!pbuf)
+            {
+              pbuf = end + 1;
+              continue;
+            }
+
+          /* Cmd handle */
+
+          for (i = 0; i < ARRAY_SIZE(g_atcmd); i++)
+            {
+              if (strncasecmp(pbuf, g_atcmd[i].cmd, strlen(g_atcmd[i].cmd)) == 0)
+                {
+                  g_atcmd[i].handler(g_uarts[g_atcmd[i].idx].fd, NULL, pbuf);
+                  break;
+                }
+            }
+
+          /* Unknown cmd handle */
+
+          if (i == ARRAY_SIZE(g_atcmd))
+            {
+              atcmd_remote_handler(g_uarts[ATCMD_UART_MODEM].fd, NULL, pbuf);
+            }
+
+          pbuf = end + 1;
+        }
+      else if ((end = strchr(pbuf, ASCII_SUB)) != NULL)
+        {
+          /* Process bit stream transfer with '^z' */
+
+          end[0] = '\0';
+          atcmd_remote_handler(g_uarts[ATCMD_UART_MODEM].fd, pbuf, pbuf);
+
+          pbuf = end + 1;
+        }
+      else
         {
           break;
         }
-
-      end[0] = '\0';
-
-      pbuf = strcasestr(pbuf, "at");
-      if (!pbuf || strlen(pbuf) < 2)
-        {
-          pbuf = end + 1;
-          continue;
-        }
-
-      /* Cmd handle */
-
-      for (i = 0; i < ARRAY_SIZE(g_atcmd); i++)
-        {
-          if (strncasecmp(pbuf, g_atcmd[i].cmd, strlen(g_atcmd[i].cmd)) == 0)
-            {
-              g_atcmd[i].handler(g_uarts[g_atcmd[i].idx].fd, NULL, pbuf);
-              break;
-            }
-        }
-
-      /* Unknown cmd handle */
-
-      if (i == ARRAY_SIZE(g_atcmd))
-        {
-          atcmd_remote_handler(g_uarts[ATCMD_UART_MODEM].fd, NULL, pbuf);
-        }
-
-      pbuf = end + 1;
     }
 
   return pbuf - serial->buf;

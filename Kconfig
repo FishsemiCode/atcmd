@@ -7,6 +7,7 @@ config SERVICES_ATCMD
 	bool "Services ATCMD"
 	default n
 	select NETUTILS_PING
+	select NETUTILS_PING6
 	---help---
 		Enable the ATCMD services
 

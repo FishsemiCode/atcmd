@@ -50,6 +50,8 @@
 
 #include "atcmd.h"
 
+#ifdef CONFIG_NETUTILS_PING6
+
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -224,6 +226,7 @@ static void atcmd_nping6_result(FAR const struct ping6_result_s *result)
         break;
     }
 }
+#endif
 
 /****************************************************************************
  * Public Funtions
@@ -231,6 +234,7 @@ static void atcmd_nping6_result(FAR const struct ping6_result_s *result)
 
 void atcmd_nping6_handler(int fd, const char *cmd, char *param)
 {
+#ifdef CONFIG_NETUTILS_PING6
   struct atcmd_nping6_priv_s priv;
   struct ping6_info_s info;
   int ret;
@@ -267,4 +271,7 @@ void atcmd_nping6_handler(int fd, const char *cmd, char *param)
           dprintf(fd, "\r\nERROR\r\n");
         }
     }
+#else
+  dprintf(fd, "\r\n+NPING6: don't support\r\n");
+#endif
 }

@@ -49,6 +49,8 @@
 
 #include "atcmd.h"
 
+#ifdef CONFIG_NETUTILS_PING
+
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -228,6 +230,7 @@ static void atcmd_nping_result(FAR const struct ping_result_s *result)
         break;
     }
 }
+#endif
 
 /****************************************************************************
  * Public Funtions
@@ -235,6 +238,7 @@ static void atcmd_nping_result(FAR const struct ping_result_s *result)
 
 void atcmd_nping_handler(int fd, const char *cmd, char *param)
 {
+#ifdef CONFIG_NETUTILS_PING
   struct atcmd_nping_priv_s priv;
   struct ping_info_s info;
   int ret;
@@ -271,4 +275,7 @@ void atcmd_nping_handler(int fd, const char *cmd, char *param)
           dprintf(fd, "\r\nERROR\r\n");
         }
     }
+#else
+  dprintf(fd, "\r\n+NPING: don't support\r\n");
+#endif
 }

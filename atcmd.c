@@ -164,6 +164,7 @@ static int atcmd_serial_handler(struct atcmd_uart_s *serial)
             }
 
           /* Unknown cmd handle */
+          syslog(LOG_INFO, "ap rx buf:%s\n", pbuf);
 
           if (i == ARRAY_SIZE(g_atcmd))
             {

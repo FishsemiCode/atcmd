@@ -77,6 +77,7 @@ struct atcmd_nping6_priv_s
 static int atcmd_nping6_parase(struct ping6_info_s *info, char *param)
 {
   char *str;
+  int tmp;
 
   str = param + strlen("at+nping6");
 
@@ -130,11 +131,13 @@ static int atcmd_nping6_parase(struct ping6_info_s *info, char *param)
     }
 
   str++;
-  info->count = atoi(str);
-  if (info->count < 1 || info->count > 255)
+  tmp = atoi(str);
+  if (tmp < 1 || tmp > 255)
     {
       return -EINVAL;
     }
+
+  info->count = tmp;
 
   str = strstr(str, ",");
   if (!str)
@@ -145,11 +148,13 @@ static int atcmd_nping6_parase(struct ping6_info_s *info, char *param)
   /* Get datalen */
 
   str++;
-  info->datalen = atoi(str);
-  if (info->datalen < 1 || info->datalen > 1460)
+  tmp = atoi(str);
+  if (tmp < 1 || tmp > 1460)
     {
       return -EINVAL;
     }
+
+  info->datalen = tmp;
 
   str = strstr(str, ",");
   if (!str)
@@ -160,11 +165,13 @@ static int atcmd_nping6_parase(struct ping6_info_s *info, char *param)
   /* Get interval */
 
   str++;
-  info->delay = atoi(str);
-  if (info->delay < 1000 || info->delay > 10000)
+  tmp = atoi(str);
+  if (tmp < 1000 || tmp > 10000)
     {
       return -EINVAL;
     }
+
+  info->delay = tmp;
 
   str = strstr(str, ",");
   if (!str)
@@ -175,11 +182,13 @@ static int atcmd_nping6_parase(struct ping6_info_s *info, char *param)
   /* Get timeout */
 
   str++;
-  info->timeout = atoi(str);
-  if (info->timeout < 1000 || info->timeout > 60000)
+  tmp = atoi(str);
+  if (tmp < 1000 || tmp > 60000)
     {
       return -EINVAL;
     }
+
+  info->timeout = tmp;
 
   str = strstr(str, ",");
   if (!str)

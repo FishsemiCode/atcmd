@@ -219,19 +219,17 @@ static void atcmd_nping6_result(FAR const struct ping6_result_s *result)
         priv->total += result->extra;
         break;
 
-      case ICMPv6_E_HOSTIP:
-      case ICMPv6_E_MEMORY:
-      case ICMPv6_E_SOCKET:
-      case ICMPv6_E_SENDTO:
-      case ICMPv6_E_SENDSMALL:
-      case ICMPv6_E_POLL:
-      case ICMPv6_E_RECVFROM:
-      case ICMPv6_E_RECVSMALL:
       case ICMPv6_I_FINISH:
         dprintf(priv->fd, "\r\n+NPING6STATE:%d,%u,%u,%d\r\n",
                 result->nrequests ? 0 : result->code,
                 result->nrequests, result->nreplies,
                 result->nreplies ? priv->total / result->nreplies : 0);
+        if (result->nrequests > 0)
+          dprintf(priv->fd, "\r\nOK\r\n");
+        else
+          dprintf(priv->fd, "\r\nERROR\r\n");
+        break;
+      default:
         break;
     }
 }

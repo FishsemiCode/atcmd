@@ -223,19 +223,17 @@ static void atcmd_nping_result(FAR const struct ping_result_s *result)
         priv->total += result->extra;
         break;
 
-      case ICMP_E_HOSTIP:
-      case ICMP_E_MEMORY:
-      case ICMP_E_SOCKET:
-      case ICMP_E_SENDTO:
-      case ICMP_E_SENDSMALL:
-      case ICMP_E_POLL:
-      case ICMP_E_RECVFROM:
-      case ICMP_E_RECVSMALL:
       case ICMP_I_FINISH:
         dprintf(priv->fd, "\r\n+NPINGSTATE:%d,%u,%u,%d\r\n",
                 result->nrequests ? 0 : result->code,
                 result->nrequests, result->nreplies,
                 result->nreplies ? priv->total / result->nreplies : 0);
+        if (result->nrequests > 0)
+          dprintf(priv->fd, "\r\nOK\r\n");
+        else
+          dprintf(priv->fd, "\r\nERROR\r\n");
+        break;
+      default:
         break;
     }
 }

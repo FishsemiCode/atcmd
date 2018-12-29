@@ -105,6 +105,8 @@ static const struct atcmd_table_s g_atcmd[] =
   {"AT+PHTTP",  atcmd_http_handler,     ATCMD_UART_SERIAL},
   {"AT+PGNSS",  atcmd_remote_handler,   ATCMD_UART_GPS},
   {"AT+PSSL",   atcmd_ssl_handler,      ATCMD_UART_SERIAL},
+  {"AT+TRB",    atcmd_trb_handler,      ATCMD_UART_SERIAL},
+  {"AT+TSO",    atcmd_tso_handler,      ATCMD_UART_SERIAL},
   {"AT+IFC",    atcmd_ifc_handler,      ATCMD_UART_SERIAL},
   {"AT+IPR",    atcmd_ipr_handler,      ATCMD_UART_SERIAL},
   {"AT+PF",     atcmd_files_handler,    ATCMD_UART_SERIAL},

@@ -41,6 +41,8 @@
 #include <nuttx/config.h>
 
 #include <string.h>
+#include <sys/boardctl.h>
+
 #include "atcmd.h"
 
 /****************************************************************************
@@ -55,4 +57,9 @@ void atcmd_ifc_handler(int fd, const char *cmd, char *param)
 void atcmd_ipr_handler(int fd, const char *cmd, char *param)
 {
   atcmd_safe_write(fd, ATCMD_ACK_OK, strlen(ATCMD_ACK_OK));
+}
+
+void atcmd_trb_handler(int fd, const char *cmd, char *param)
+{
+  boardctl(BOARDIOC_RESET, 0);
 }

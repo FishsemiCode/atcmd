@@ -40,14 +40,172 @@
 
 #include <nuttx/config.h>
 
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/boardctl.h>
+#include <time.h>
 
 #include "atcmd.h"
 
 /****************************************************************************
  * Public Funtions
  ****************************************************************************/
+
+static int atcmd_cclk_parser(char *str, time_t *time)
+{
+  struct tm tmtime;
+  int tmp;
+
+  str += strlen("at+cclk");
+
+  if (*str == '?')
+    {
+      return 0;
+    }
+  else if (*str != '=')
+    {
+      return -EINVAL;
+    }
+
+  /* Check ? */
+
+  str++;
+  if (*str == '\0' || *str == '?')
+    {
+      return 1;
+    }
+
+  /* Get year */
+
+  tmp = strtoul(str, &str, 0);
+  if (tmp < 0)
+    {
+      return -EINVAL;
+    }
+
+  tmtime.tm_year = tmp - 1900;
+
+  if (*str++ != '/')
+    {
+      return -EINVAL;
+    }
+
+  /* Get month */
+
+  tmp = strtoul(str, &str, 0);
+  if (tmp < 1 || tmp > 12)
+    {
+      return -EINVAL;
+    }
+
+  tmtime.tm_mon = tmp - 1;
+
+  if (*str++ != '/')
+    {
+      return -EINVAL;
+    }
+
+  /* Get mday */
+
+  tmp = strtoul(str, &str, 0);
+  if (tmp < 1 || tmp > 31)
+    {
+      return -EINVAL;
+    }
+
+  tmtime.tm_mday = tmp;
+
+  if (*str++ != ',')
+    {
+      return -EINVAL;
+    }
+
+  /* Get hours */
+
+  tmp = strtoul(str, &str, 0);
+  if (tmp < 0 || tmp > 23)
+    {
+      return -EINVAL;
+    }
+
+  tmtime.tm_hour = tmp;
+
+  if (*str++ != ':')
+    {
+      return -EINVAL;
+    }
+
+  /* Get minutes */
+
+  tmp = strtoul(str, &str, 0);
+  if (tmp < 0 || tmp > 59)
+    {
+      return -EINVAL;
+    }
+
+  tmtime.tm_min = tmp;
+
+  if (*str++ != ':')
+    {
+      return -EINVAL;
+    }
+
+  /* Get second */
+
+  tmp = strtoul(str, &str, 0);
+  if (tmp < 0 || tmp > 59)
+    {
+      return -EINVAL;
+    }
+
+  tmtime.tm_sec = tmp;
+
+  *time = mktime(&tmtime);
+
+  return 2;
+}
+
+void atcmd_cclk_handler(int fd, const char *cmd, char *param)
+{
+  time_t time;
+  int ret;
+
+  ret = atcmd_cclk_parser(param, &time);
+  if (ret < 1)
+    {
+      dprintf(fd, "\r\n+CCLK=yy/mm/dd,hh:mm:ss\r\n");
+      goto out;
+    }
+  else if (ret == 1)
+    {
+      struct timespec tp = {0};
+      struct tm tmtime;
+
+      clock_gettime(CLOCK_REALTIME, &tp);
+
+      gmtime_r(&tp.tv_sec, &tmtime);
+      tmtime.tm_year += 1900;
+      tmtime.tm_mon  += 1;
+
+      dprintf(fd, "\r\n+CCLK=%d/%d/%d,%d:%d:%d\r\n",
+              tmtime.tm_year, tmtime.tm_mon,
+              tmtime.tm_mday, tmtime.tm_hour,
+              tmtime.tm_min, tmtime.tm_sec);
+    }
+  else
+    {
+      struct timespec tp;
+
+      tp.tv_sec  = time;
+      tp.tv_nsec = 0;
+      clock_settime(CLOCK_REALTIME, &tp);
+    }
+
+out:
+  dprintf(fd, "\r\n%s\r\n", ret >= 0 ? "OK" : "ERROR");
+}
 
 void atcmd_ifc_handler(int fd, const char *cmd, char *param)
 {

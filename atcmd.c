@@ -212,7 +212,15 @@ static int atcmd_response_handler(int fd, struct atcmd_uart_s *uart)
   return len;
 }
 
-static int atcmd_daemon(int argc, char *argv[])
+/****************************************************************************
+ * Public Funtions
+ ****************************************************************************/
+
+#ifdef BUILD_MODULE
+int main(int argc, char *argv[])
+#else
+int atcmd_main(int argc, char *argv[])
+#endif
 {
   struct pollfd fds[ATCMD_NUARTS];
   int i, ret = -EINVAL;
@@ -285,25 +293,4 @@ errout:
     }
 
   return ret;
-}
-
-/****************************************************************************
- * Public Funtions
- ****************************************************************************/
-
-#ifdef CONFIG_BUILD_KERNEL
-int main(int argc, char *argv[])
-#else
-int atcmd_main(int argc, char *argv[])
-#endif
-{
-  int ret;
-
-  ret = task_create(argv[0],
-          CONFIG_SERVICES_ATCMD_PRIORITY,
-          CONFIG_SERVICES_ATCMD_STACKSIZE,
-          atcmd_daemon,
-          argv + 1);
-
-  return ret > 0 ? 0 : ret;
 }

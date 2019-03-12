@@ -88,6 +88,7 @@ extern void atcmd_trb_handler(int fd, const char *cmd, char *param);
 extern void atcmd_tso_handler(int fd, const char *cmd, char *param);
 extern void atcmd_nping_handler(int fd, const char *cmd, char *param);
 extern void atcmd_nping6_handler(int fd, const char *cmd, char *param);
+extern void atcmd_tping_handler(int fd, const char *cmd, char *param);
 extern void atcmd_ssl_handler(int fd, const char *cmd, char *param);
 
 #endif /* __SERVICES_ATCMD_ATCMD_H */

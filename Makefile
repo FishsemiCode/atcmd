@@ -45,7 +45,7 @@ CSRCS   = atcmd_basic.c atcmd_files.c
 CSRCS  += atcmd_http.c atcmd_ssl.c
 CSRCS  += atcmd_coap.c atcmd_socket.c
 CSRCS  += atcmd_nping.c atcmd_nping6.c
-CSRCS  += atcmd_utils.c
+CSRCS  += atcmd_tping.c atcmd_utils.c
 
 CFLAGS_STR := "$(CFLAGS)"
 

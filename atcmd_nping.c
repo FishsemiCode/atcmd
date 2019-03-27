@@ -205,7 +205,7 @@ static void atcmd_nping_result(FAR const struct ping_result_s *result)
   switch (result->code)
     {
       case ICMP_W_TIMEOUT:
-        dprintf(priv->fd, "\r\n+NPING:%u.%u.%u,%u,%d,%d,timout\r\n",
+        dprintf(priv->fd, "\r\n+NPING:%u.%u.%u.%u,%d,%d,timout\r\n",
                (result->dest.s_addr      ) & 0xff,
                (result->dest.s_addr >> 8 ) & 0xff,
                (result->dest.s_addr >> 16) & 0xff,
@@ -214,7 +214,7 @@ static void atcmd_nping_result(FAR const struct ping_result_s *result)
         break;
 
       case ICMP_I_ROUNDTRIP:
-        dprintf(priv->fd, "\r\n+NPING:%u.%u.%u,%u,%d,%d\r\n",
+        dprintf(priv->fd, "\r\n+NPING:%u.%u.%u.%u,%d,%d\r\n",
                (result->dest.s_addr      ) & 0xff,
                (result->dest.s_addr >> 8 ) & 0xff,
                (result->dest.s_addr >> 16) & 0xff,

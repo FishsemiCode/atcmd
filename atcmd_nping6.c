@@ -212,10 +212,12 @@ static void atcmd_nping6_result(FAR const struct ping6_result_s *result)
                 strbuffer,result->seqno, result->extra);
         break;
 
+      case ICMPv6_I_PKTDUP:
       case ICMPv6_I_ROUNDTRIP:
         inet_ntop(AF_INET6, result->dest.s6_addr16, strbuffer, INET6_ADDRSTRLEN);
-        dprintf(priv->fd, "\r\n+NPING6:%s,%d,%d\r\n",
-                strbuffer,result->seqno, result->extra);
+        dprintf(priv->fd, "\r\n+NPING6:%s,%d,%d%s\r\n",
+                strbuffer,result->seqno, result->extra,
+                (result->code == ICMPv6_I_PKTDUP) ? ",(DUP!)" : "");
         priv->total += result->extra;
         break;
 

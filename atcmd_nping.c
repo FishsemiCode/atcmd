@@ -213,13 +213,16 @@ static void atcmd_nping_result(FAR const struct ping_result_s *result)
                result->seqno, result->extra);
         break;
 
+      case ICMP_I_PKTDUP:
       case ICMP_I_ROUNDTRIP:
-        dprintf(priv->fd, "\r\n+NPING:%u.%u.%u.%u,%d,%d\r\n",
+        dprintf(priv->fd, "\r\n+NPING:%u.%u.%u.%u,%d,%d%s\r\n",
                (result->dest.s_addr      ) & 0xff,
                (result->dest.s_addr >> 8 ) & 0xff,
                (result->dest.s_addr >> 16) & 0xff,
                (result->dest.s_addr >> 24) & 0xff,
-               result->seqno, result->extra);
+               result->seqno, result->extra,
+               (result->code == ICMP_I_PKTDUP) ?
+               ",(DUP!)" : "");
         priv->total += result->extra;
         break;
 

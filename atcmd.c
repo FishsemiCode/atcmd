@@ -48,6 +48,7 @@
 #include <sched.h>
 #include <string.h>
 #include <strings.h>
+#include <stdlib.h>
 
 #include "atcmd.h"
 
@@ -112,7 +113,7 @@ static const struct atcmd_table_s g_atcmd[] =
   {"AT+IFC",    atcmd_ifc_handler,      ATCMD_UART_SERIAL},
   {"AT+IPR",    atcmd_ipr_handler,      ATCMD_UART_SERIAL},
   {"AT+PF",     atcmd_files_handler,    ATCMD_UART_SERIAL},
-  {"AT+X",      atcmd_remote_handler,   ATCMD_UART_APP},
+  {"AT"CONFIG_SERVICES_ATCMD_APP_PREFIX,   atcmd_remote_handler,   ATCMD_UART_APP},
   {"AT",        atcmd_remote_handler,   ATCMD_UART_MODEM},
 };
 
@@ -242,6 +243,8 @@ int atcmd_main(int argc, char *argv[])
       fds[i].fd     = g_uarts[i].fd;
       fds[i].events = POLLIN;
     }
+
+  unlockpt(g_uarts[ATCMD_UART_APP].fd);
 
   while (1)
     {

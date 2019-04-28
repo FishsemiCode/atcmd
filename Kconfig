@@ -23,6 +23,12 @@ config SERVICES_ATCMD_STACKSIZE
 	int "atcmd task stack size"
 	default 2048
 	---help---
-	The stack size allocated for the atcmd task.
+		The stack size allocated for the atcmd task.
+
+config SERVICES_ATCMD_APP_PREFIX
+	string "atcmd app at command prefix"
+	default "+MIPL"
+	---help---
+		The at commands with the prefix should route to app uart
 
 endif # SERVICES_ATCMD

@@ -40,6 +40,8 @@
 
 #include <nuttx/config.h>
 
+#include <nuttx/power/pm.h>
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -209,6 +211,7 @@ out:
 
 void atcmd_ifc_handler(int fd, const char *cmd, char *param)
 {
+  pm_activity(0, 10);
   atcmd_safe_write(fd, ATCMD_ACK_OK, strlen(ATCMD_ACK_OK));
 }
 

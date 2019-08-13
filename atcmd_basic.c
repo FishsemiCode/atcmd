@@ -41,15 +41,30 @@
 #include <nuttx/config.h>
 
 #include <nuttx/power/pm.h>
+#include <nuttx/environ.h>
+#include <nuttx/misc/misc_rpmsg.h>
 
 #include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/boardctl.h>
+#include <sys/ioctl.h>
 #include <time.h>
 
 #include "atcmd.h"
+
+/****************************************************************************
+ * Private Types
+ ****************************************************************************/
+
+struct atcmd_env_s
+{
+  const char *name;
+  const char *value;
+  bool       flash_write;
+};
 
 /****************************************************************************
  * Public Funtions
@@ -206,6 +221,94 @@ void atcmd_cclk_handler(int fd, const char *cmd, char *param)
     }
 
 out:
+  dprintf(fd, "\r\n%s\r\n", ret >= 0 ? "OK" : "ERROR");
+}
+
+static int atcmd_env_parser(char *str, struct atcmd_env_s *env)
+{
+  char *ptr;
+
+  str += strlen("at+penv");
+
+  if (*str != ':')
+    {
+      return -EINVAL;
+    }
+
+  env->name = ++str;
+
+  ptr = strchr(str, '=');
+  if (!ptr)
+    {
+      return 1;
+    }
+
+  *ptr = 0;
+  str  = ++ptr;
+  env->value = str;
+
+  ptr = strchr(str, '!');
+  if (!ptr)
+    {
+      env->flash_write = 0;
+    }
+  else
+    {
+      env->flash_write = 1;
+      *ptr = 0;
+    }
+
+  return 2;
+}
+
+void atcmd_env_handler(int fd, const char *cmd, char *param)
+{
+  struct atcmd_env_s env;
+  int ret;
+
+  ret = atcmd_env_parser(param, &env);
+  if (ret < 0)
+    {
+      dprintf(fd, "\r\n+PENV:envname=envvalue!\r\n");
+    }
+  else if (ret == 1)
+    {
+      env.value = getenv_global(env.name);
+      if (env.value)
+        {
+          dprintf(fd, "\r\n+PENV:%s=%s\r\n",env.name, env.value);
+        }
+      else
+        {
+          ret = -EINVAL;
+        }
+    }
+  else if (ret == 2)
+    {
+      setenv_global(env.name, env.value, 1);
+      if (env.flash_write)
+        {
+          int fd_misc;
+
+          fd_misc = open("/dev/misc", 0);
+          if (fd >= 0)
+            {
+              struct misc_remote_infowrite_s info =
+                {
+                  .name  = env.name,
+                  .value = env.value,
+                };
+
+              ret = ioctl(fd_misc, MISC_REMOTE_INFOWRITE, (unsigned long)&info);
+              close(fd_misc);
+            }
+          else
+            {
+              ret = -EINVAL;
+            }
+        }
+    }
+
   dprintf(fd, "\r\n%s\r\n", ret >= 0 ? "OK" : "ERROR");
 }
 

@@ -80,6 +80,7 @@ extern ssize_t atcmd_safe_write(int fd, const void *buf, size_t len);
 
 extern void atcmd_cclk_handler(int fd, const char *cmd, char *param);
 extern void atcmd_coap_handler(int fd, const char *cmd, char *param);
+extern void atcmd_env_handler(int fd, const char *cmd, char *param);
 extern void atcmd_files_handler(int fd, const char *cmd, char *param);
 extern void atcmd_http_handler(int fd, const char *cmd, char *param);
 extern void atcmd_ifc_handler(int fd, const char *cmd, char *param);

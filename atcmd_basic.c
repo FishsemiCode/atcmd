@@ -288,6 +288,7 @@ void atcmd_env_handler(int fd, const char *cmd, char *param)
       setenv_global(env.name, env.value, 1);
       if (env.flash_write)
         {
+#ifdef CONFIG_MISC_RPMSG
           int fd_misc;
 
           fd_misc = open("/dev/misc", 0);
@@ -303,6 +304,7 @@ void atcmd_env_handler(int fd, const char *cmd, char *param)
               close(fd_misc);
             }
           else
+#endif
             {
               ret = -EINVAL;
             }

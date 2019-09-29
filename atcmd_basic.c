@@ -292,12 +292,13 @@ void atcmd_env_handler(int fd, const char *cmd, char *param)
           int fd_misc;
 
           fd_misc = open("/dev/misc", 0);
-          if (fd >= 0)
+          if (fd_misc >= 0)
             {
               struct misc_remote_infowrite_s info =
                 {
                   .name  = env.name,
-                  .value = env.value,
+                  .value = (uint8_t *)env.value,
+                  .len   = strlen(env.value),
                 };
 
               ret = ioctl(fd_misc, MISC_REMOTE_INFOWRITE, (unsigned long)&info);

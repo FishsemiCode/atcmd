@@ -79,7 +79,7 @@ static int atcmd_cclk_parser(char *str, time_t *time)
 
   if (*str == '?')
     {
-      return 0;
+      return 1;
     }
   else if (*str != '=')
     {
@@ -91,7 +91,12 @@ static int atcmd_cclk_parser(char *str, time_t *time)
   str++;
   if (*str == '\0' || *str == '?')
     {
-      return 1;
+      return 0;
+    }
+
+  if (*str++ != '"')
+    {
+      return -EINVAL;
     }
 
   /* Get year */
@@ -192,7 +197,7 @@ void atcmd_cclk_handler(int fd, const char *cmd, char *param)
   ret = atcmd_cclk_parser(param, &time);
   if (ret < 1)
     {
-      dprintf(fd, "\r\n+CCLK=yy/mm/dd,hh:mm:ss\r\n");
+     // dprintf(fd, "\r\n+CCLK=yy/mm/dd,hh:mm:ss\r\n");
       goto out;
     }
   else if (ret == 1)
@@ -204,7 +209,6 @@ void atcmd_cclk_handler(int fd, const char *cmd, char *param)
 
       gmtime_r(&tp.tv_sec, &tmtime);
       tmtime.tm_year += 1900;
-      tmtime.tm_mon  += 1;
 
       dprintf(fd, "\r\n+CCLK=%d/%d/%d,%d:%d:%d\r\n",
               tmtime.tm_year, tmtime.tm_mon,

@@ -210,7 +210,7 @@ void atcmd_cclk_handler(int fd, const char *cmd, char *param)
       gmtime_r(&tp.tv_sec, &tmtime);
       tmtime.tm_year += 1900;
 
-      dprintf(fd, "\r\n+CCLK=%d/%d/%d,%d:%d:%d\r\n",
+      dprintf(fd, "\r\n+CCLK=\"%d/%d/%d,%d:%d:%d\"\r\n",
               tmtime.tm_year, tmtime.tm_mon,
               tmtime.tm_mday, tmtime.tm_hour,
               tmtime.tm_min, tmtime.tm_sec);

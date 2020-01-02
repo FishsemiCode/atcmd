@@ -82,6 +82,7 @@ extern void atcmd_cclk_handler(int fd, const char *cmd, char *param);
 extern void atcmd_coap_handler(int fd, const char *cmd, char *param);
 extern void atcmd_env_handler(int fd, const char *cmd, char *param);
 extern void atcmd_files_handler(int fd, const char *cmd, char *param);
+extern void atcmd_flush_handler(int fd, const char *cmd, char *param);
 extern void atcmd_http_handler(int fd, const char *cmd, char *param);
 extern void atcmd_ifc_handler(int fd, const char *cmd, char *param);
 extern void atcmd_ipr_handler(int fd, const char *cmd, char *param);

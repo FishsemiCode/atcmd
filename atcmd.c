@@ -100,6 +100,7 @@ static const char *g_names[ATCMD_NUARTS] =
 
 static const struct atcmd_table_s g_atcmd[] =
 {
+  {"AT+PFLUSH", atcmd_flush_handler,   ATCMD_UART_SERIAL},
   {"AT+NPING6", atcmd_nping6_handler,   ATCMD_UART_SERIAL},
   {"AT+NPING",  atcmd_nping_handler,    ATCMD_UART_SERIAL},
   {"AT+TPING",  atcmd_tping_handler,    ATCMD_UART_SERIAL},

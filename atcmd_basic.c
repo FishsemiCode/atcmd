@@ -319,6 +319,41 @@ void atcmd_env_handler(int fd, const char *cmd, char *param)
   dprintf(fd, "\r\n%s\r\n", ret >= 0 ? "OK" : "ERROR");
 }
 
+void atcmd_flush_handler(int fd, const char *cmd, char *param)
+{
+#ifdef CONFIG_MISC_RPMSG
+  char *str = param;
+  const char *path;
+  int ret = -EINVAL;
+  int fd_misc;
+
+  str += strlen("at+pflush");
+  if (*str != '=')
+    {
+      goto out;
+    }
+
+  path = ++str;
+
+  fd_misc = open("/dev/misc", 0);
+  if (fd_misc >= 0)
+    {
+      struct misc_remote_ramflush_s flush =
+        {
+          .fpath = path,
+        };
+
+      ret = ioctl(fd_misc, MISC_REMOTE_RAMFLUSH, (unsigned long)&flush);
+      close(fd_misc);
+    }
+
+out:
+  dprintf(fd, "\r\n%s\r\n", ret >= 0 ? "OK" : "ERROR");
+#else
+  dprintf(fd, "\r\n+PFLUSH NOT SUPPORT\r\n");
+#endif
+}
+
 void atcmd_ifc_handler(int fd, const char *cmd, char *param)
 {
   pm_activity(0, 10);

@@ -93,4 +93,9 @@ extern void atcmd_nping6_handler(int fd, const char *cmd, char *param);
 extern void atcmd_tping_handler(int fd, const char *cmd, char *param);
 extern void atcmd_ssl_handler(int fd, const char *cmd, char *param);
 
+#ifdef CONFIG_SERVICES_SOFTSIM
+extern void atcmd_esim_handler(int fd, const char *cmd, char *param);
+#endif
+
+
 #endif /* __SERVICES_ATCMD_ATCMD_H */

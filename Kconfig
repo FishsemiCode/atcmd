@@ -21,7 +21,7 @@ config SERVICES_ATCMD_PRIORITY
 
 config SERVICES_ATCMD_STACKSIZE
 	int "atcmd task stack size"
-	default 2048
+	default 4096
 	---help---
 		The stack size allocated for the atcmd task.
 

@@ -56,7 +56,7 @@
  * Pre-processor definitions
  ****************************************************************************/
 
-#define ATCMD_BUFMAX            1024
+#define ATCMD_BUFMAX            3072
 
 #define ATCMD_UART_SERIAL        0
 #define ATCMD_UART_GPS           1
@@ -108,6 +108,9 @@ static const struct atcmd_table_s g_atcmd[] =
   {"AT+PHTTP",  atcmd_http_handler,     ATCMD_UART_SERIAL},
   {"AT+PGNSS",  atcmd_remote_handler,   ATCMD_UART_GPS},
   {"AT+CCLK",   atcmd_cclk_handler,     ATCMD_UART_SERIAL},
+#ifdef CONFIG_SERVICES_SOFTSIM
+  {"AT+ESIM",   atcmd_esim_handler,     ATCMD_UART_SERIAL},
+#endif
   {"AT+PENV",   atcmd_env_handler,      ATCMD_UART_SERIAL},
   {"AT+PSSL",   atcmd_ssl_handler,      ATCMD_UART_SERIAL},
   {"AT+TRB",    atcmd_trb_handler,      ATCMD_UART_SERIAL},

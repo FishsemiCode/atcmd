@@ -107,6 +107,9 @@ static const struct atcmd_table_s g_atcmd[] =
   {"AT+PCOAP",  atcmd_coap_handler,     ATCMD_UART_SERIAL},
   {"AT+PHTTP",  atcmd_http_handler,     ATCMD_UART_SERIAL},
   {"AT+PGNSS",  atcmd_remote_handler,   ATCMD_UART_GPS},
+#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
+  {"AT+PTEST",  atcmd_ptest_handler,    ATCMD_UART_SERIAL},
+#endif
   {"AT+CCLK",   atcmd_cclk_handler,     ATCMD_UART_SERIAL},
   {"AT+PENV",   atcmd_env_handler,      ATCMD_UART_SERIAL},
   {"AT+PSSL",   atcmd_ssl_handler,      ATCMD_UART_SERIAL},

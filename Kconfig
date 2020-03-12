@@ -31,4 +31,10 @@ config SERVICES_ATCMD_APP_PREFIX
 	---help---
 		The at commands with the prefix should route to app uart
 
+config SERVICES_ATCMD_CHIP_TEST
+	bool "ATCMD Chip Test"
+	default n
+	---help---
+		Enable chip test AT command.
+
 endif # SERVICES_ATCMD

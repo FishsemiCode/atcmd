@@ -47,6 +47,10 @@ CSRCS  += atcmd_coap.c atcmd_socket.c
 CSRCS  += atcmd_nping.c atcmd_nping6.c
 CSRCS  += atcmd_tping.c atcmd_utils.c
 
+ifeq ($(CONFIG_SERVICES_ATCMD_CHIP_TEST),y)
+CSRCS  += atcmd_chiptest.c
+endif
+
 CFLAGS_STR := "$(CFLAGS)"
 
 PROGNAME = atcmd$(EXEEXT)

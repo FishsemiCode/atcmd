@@ -93,4 +93,8 @@ extern void atcmd_nping6_handler(int fd, const char *cmd, char *param);
 extern void atcmd_tping_handler(int fd, const char *cmd, char *param);
 extern void atcmd_ssl_handler(int fd, const char *cmd, char *param);
 
+#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
+extern void atcmd_ptest_handler(int fd, const char *cmd, char *param);
+#endif
+
 #endif /* __SERVICES_ATCMD_ATCMD_H */

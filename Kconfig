@@ -34,6 +34,11 @@ config SERVICES_ATCMD_APP_PREFIX
 config SERVICES_ATCMD_CHIP_TEST
 	bool "ATCMD Chip Test"
 	default n
+	select MTD
+	select MTD_BYTE_WRITE
+	select MTD_GD25
+	select FS_LITTLEFS
+	select I2C_TCA6424A
 	---help---
 		Enable chip test AT command.
 

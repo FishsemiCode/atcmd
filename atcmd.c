@@ -62,7 +62,12 @@
 #define ATCMD_UART_GPS           1
 #define ATCMD_UART_MODEM         2
 #define ATCMD_UART_APP           3
+#ifdef CONFIG_SOFTSIM_ON_CHIP_SP
+#define ATCMD_UART_SP            4
+#define ATCMD_NUARTS             5
+#else
 #define ATCMD_NUARTS             4
+#endif
 
 /****************************************************************************
  * Private Types
@@ -96,6 +101,9 @@ static const char *g_names[ATCMD_NUARTS] =
   "/dev/ttyGPS",    // 1, ATCMD_UART_GPS
   "/dev/ttyAT",     // 2, ATCMD_UART_MODEM
   "/dev/pty0",      // 3, ATCMD_UART_APP
+#ifdef CONFIG_SOFTSIM_ON_CHIP_SP
+  "/dev/ttyAT2",    // 4, ATCMD_UART_SP
+#endif
 };
 
 static const struct atcmd_table_s g_atcmd[] =
@@ -110,6 +118,8 @@ static const struct atcmd_table_s g_atcmd[] =
   {"AT+CCLK",   atcmd_cclk_handler,     ATCMD_UART_SERIAL},
 #ifdef CONFIG_SERVICES_SOFTSIM
   {"AT+ESIM",   atcmd_esim_handler,     ATCMD_UART_SERIAL},
+#elif defined(CONFIG_SOFTSIM_ON_CHIP_SP)
+  {"AT+ESIM",   atcmd_remote_handler,   ATCMD_UART_SP},
 #endif
   {"AT+PENV",   atcmd_env_handler,      ATCMD_UART_SERIAL},
   {"AT+PSSL",   atcmd_ssl_handler,      ATCMD_UART_SERIAL},

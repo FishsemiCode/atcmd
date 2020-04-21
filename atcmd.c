@@ -43,6 +43,7 @@
 #include <nuttx/ascii.h>
 #include <nuttx/serial/pty.h>
 
+#include <ctype.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <sched.h>
@@ -220,6 +221,21 @@ static int atcmd_response_handler(int fd, struct atcmd_uart_s *uart)
   return len;
 }
 
+static int atcmd_check_error_char(char *buf, int len)
+{
+  int i;
+
+  for (i = 0; i < len; i++)
+    {
+      if (!isprint(buf[i]) && !isspace(buf[i]))
+        {
+          return 1;
+        }
+    }
+
+  return 0;
+}
+
 /****************************************************************************
  * Public Funtions
  ****************************************************************************/
@@ -270,6 +286,12 @@ int atcmd_main(int argc, char *argv[])
                   read(uart->fd, uart->buf + uart->len, ATCMD_BUFMAX - uart->len - 1);
 
               uart->buf[uart->len] = '\0';
+
+              if (atcmd_check_error_char(uart->buf, uart->len))
+                {
+                  uart->len = 0;
+                  break;
+                }
 
               if (i == ATCMD_UART_SERIAL)
                 {

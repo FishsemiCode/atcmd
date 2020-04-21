@@ -51,9 +51,16 @@
 #include <string.h>
 #include <sys/boardctl.h>
 #include <sys/ioctl.h>
+#include <termios.h>
 #include <time.h>
 
 #include "atcmd.h"
+
+/****************************************************************************
+ * Pre-processor Definitions
+ ****************************************************************************/
+
+# define putreg32(v,a)        (*(volatile uint32_t *)(a) = (v))
 
 /****************************************************************************
  * Private Types
@@ -360,9 +367,96 @@ void atcmd_ifc_handler(int fd, const char *cmd, char *param)
   atcmd_safe_write(fd, ATCMD_ACK_OK, strlen(ATCMD_ACK_OK));
 }
 
+static int atcmd_ipr_parser(char *str, int *rate)
+{
+  int tmp;
+
+  str += strlen("at+ipr");
+
+  if (*str == '?')
+    {
+      return 1;
+    }
+  else if (*str != '=')
+    {
+      return -EINVAL;
+    }
+
+  /* Check ? */
+
+  str++;
+  if (*str == '\0' || *str == '?')
+    {
+      return 2;
+    }
+
+  /* Get rate */
+
+  tmp = strtoul(str, &str, 0);
+  if (tmp < 0)
+    {
+      return -EINVAL;
+    }
+
+  *rate = tmp;
+
+  return 0;
+}
+
 void atcmd_ipr_handler(int fd, const char *cmd, char *param)
 {
-  atcmd_safe_write(fd, ATCMD_ACK_OK, strlen(ATCMD_ACK_OK));
+  struct termios term;
+  int rate;
+  int ret;
+  int ft;
+
+  ret = atcmd_ipr_parser(param, &rate);
+  if (ret < 0)
+    {
+      goto out;
+    }
+  else if (ret == 1)
+    {
+      dprintf(fd, "\r\nAT+IPR=rate\r\n");
+      goto out;
+    }
+
+  ft = open("/dev/ttyS0", 0);
+  if (ft < 0)
+    {
+      ret = -EINVAL;
+      goto out;
+    }
+
+  ioctl(ft, TCGETS, (unsigned long)&term);
+  if (ret == 2)
+    {
+      close(ft);
+      dprintf(fd, "\r\n+IPR=%d\r\n", term.c_speed);
+      goto out;
+    }
+
+  if (rate <= 9600)
+    {
+      /* Set uart0 RX to clk 32K */
+
+      putreg32(0x08012f, 0xb2010084);
+      putreg32(0x101240, 0xb2010010);
+    }
+  else
+    {
+      /* Set uart0 RX to pll0 */
+
+      putreg32(0x08012d, 0xb2010084);
+      putreg32(0x103240, 0xb2010010);
+    }
+
+  term.c_speed = rate;
+  ioctl(ft, TCSETS, (unsigned long)&term);
+
+  close(ft);
+out:
+  dprintf(fd, "\r\n%s\r\n", ret >= 0 ? "OK" : "ERROR");
 }
 
 void atcmd_trb_handler(int fd, const char *cmd, char *param)

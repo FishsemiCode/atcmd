@@ -151,7 +151,7 @@ static void atcmd_ptest_spi_handler(int fd, const char *cmd, char *param)
     {
       fclose(fp);
       umount(target);
-      dprintf(fd, "\r\n%s:ERROR(file exist)\r\n", cmd);
+      dprintf(fd, "\r\nERROR(file exist)\r\n");
       return;
     }
 
@@ -175,11 +175,11 @@ endp:
 end:
   if (0 == ret)
     {
-      dprintf(fd, "\r\n%s:OK\r\n", cmd);
+      dprintf(fd, "\r\nOK\r\n");
     }
   else
     {
-      dprintf(fd, "\r\n%s:ERROR(%d)\r\n", cmd, ret);
+      dprintf(fd, "\r\nERROR(%d)\r\n", ret);
     }
 }
 
@@ -200,11 +200,11 @@ static void atcmd_ptest_i2c_handler(int fd, const char *cmd, char *param)
 
   if (!ret)
     {
-      dprintf(fd, "\r\n%s:OK\r\n", cmd);
+      dprintf(fd, "\r\nOK\r\n");
     }
   else
     {
-      dprintf(fd, "\r\n%s:ERROR(%d)\r\n", cmd, ret);
+      dprintf(fd, "\r\nERROR(%d)\r\n", ret);
     }
 }
 
@@ -226,11 +226,11 @@ static void atcmd_ptest_pin_handler(int fd, const char *cmd, char *param)
 
   if (!ret)
     {
-      dprintf(fd, "\r\n%s:OK\r\n", cmd);
+      dprintf(fd, "\r\nOK\r\n");
     }
   else
     {
-      dprintf(fd, "\r\n%s:ERROR(%d)\r\n", cmd, ret);
+      dprintf(fd, "\r\nERROR(%d)\r\n", ret);
     }
 }
 
@@ -252,11 +252,11 @@ static void atcmd_ptest_do_handler(int fd, const char *cmd, char *param)
 
   if (!ret)
     {
-      dprintf(fd, "\r\n%s:OK\r\n", cmd);
+      dprintf(fd, "\r\nOK\r\n");
     }
   else
     {
-      dprintf(fd, "\r\n%s:ERROR(%d)\r\n", cmd, ret);
+      dprintf(fd, "\r\nERROR(%d)\r\n", ret);
     }
 }
 

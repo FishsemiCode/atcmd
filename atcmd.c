@@ -63,7 +63,14 @@
 #define ATCMD_UART_GPS           1
 #define ATCMD_UART_MODEM         2
 #define ATCMD_UART_APP           3
+
+#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
+#define ATCMD_UART_S2            4
+#define ATCMD_UART_S3            5
+#define ATCMD_NUARTS             6
+#else
 #define ATCMD_NUARTS             4
+#endif
 
 /****************************************************************************
  * Private Types
@@ -84,6 +91,9 @@ static void atcmd_remote_handler(int fd, const char *cmd, char *param);
 
 static int atcmd_serial_handler(struct atcmd_uart_s *serial);
 static int atcmd_response_handler(int outfd, struct atcmd_uart_s *uart);
+#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
+static int atcmd_serial_chiptest_handler(struct atcmd_uart_s *serial);
+#endif
 
 /****************************************************************************
  * Private Data
@@ -97,6 +107,10 @@ static const char *g_names[ATCMD_NUARTS] =
   "/dev/ttyGPS",    // 1, ATCMD_UART_GPS
   "/dev/ttyAT",     // 2, ATCMD_UART_MODEM
   "/dev/pty0",      // 3, ATCMD_UART_APP
+#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
+  "/dev/ttyS2",     // 4, ATCMD_UART_S2
+  "/dev/ttyS3",     // 5, ATCMD_UART_S3
+#endif
 };
 
 static const struct atcmd_table_s g_atcmd[] =
@@ -236,6 +250,42 @@ static int atcmd_check_error_char(char *buf, int len)
   return 0;
 }
 
+#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
+static int atcmd_serial_chiptest_handler(struct atcmd_uart_s *serial)
+{
+  char *pbuf, *end;
+  int i;
+
+  pbuf = serial->buf;
+  while (1)
+    {
+      if ((end = strchr(pbuf, '\r')) != NULL)
+        {
+          /* Process AT cmd */
+
+          end[0] = '\0';
+
+          pbuf = strcasestr(pbuf, "at");
+          if (!pbuf)
+            {
+              pbuf = end + 1;
+              continue;
+            }
+
+          atcmd_safe_write(serial->fd, "\r\nOK\r\n", 6);
+
+          pbuf = end + 1;
+        }
+      else
+        {
+          break;
+        }
+    }
+
+  return pbuf - serial->buf;
+}
+#endif
+
 /****************************************************************************
  * Public Funtions
  ****************************************************************************/
@@ -297,6 +347,12 @@ int atcmd_main(int argc, char *argv[])
                 {
                   len = atcmd_serial_handler(uart);
                 }
+#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
+              else if (i == ATCMD_UART_S2 || i == ATCMD_UART_S3)
+                {
+                  len = atcmd_serial_chiptest_handler(uart);
+                }
+#endif
               else
                 {
                   len = atcmd_response_handler(g_uarts[ATCMD_UART_SERIAL].fd, uart);

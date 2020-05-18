@@ -97,4 +97,8 @@ extern void atcmd_ssl_handler(int fd, const char *cmd, char *param);
 extern void atcmd_ptest_handler(int fd, const char *cmd, char *param);
 #endif
 
+#ifdef CONFIG_SERVICES_SOFTSIM
+extern void atcmd_esim_handler(int fd, const char *cmd, char *param);
+#endif
+
 #endif /* __SERVICES_ATCMD_ATCMD_H */

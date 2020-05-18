@@ -57,20 +57,16 @@
  * Pre-processor definitions
  ****************************************************************************/
 
-#define ATCMD_BUFMAX            1024
+#define ATCMD_BUFMAX            3072
 
 #define ATCMD_UART_SERIAL        0
 #define ATCMD_UART_GPS           1
 #define ATCMD_UART_MODEM         2
 #define ATCMD_UART_APP           3
-
-#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
 #define ATCMD_UART_S2            4
 #define ATCMD_UART_S3            5
-#define ATCMD_NUARTS             6
-#else
-#define ATCMD_NUARTS             4
-#endif
+#define ATCMD_UART_SP            6
+#define ATCMD_NUARTS             7
 
 /****************************************************************************
  * Private Types
@@ -107,9 +103,19 @@ static const char *g_names[ATCMD_NUARTS] =
   "/dev/ttyGPS",    // 1, ATCMD_UART_GPS
   "/dev/ttyAT",     // 2, ATCMD_UART_MODEM
   "/dev/pty0",      // 3, ATCMD_UART_APP
+
 #ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
   "/dev/ttyS2",     // 4, ATCMD_UART_S2
   "/dev/ttyS3",     // 5, ATCMD_UART_S3
+#else
+  NULL,             // 4, ATCMD_UART_S2
+  NULL,             // 5, ATCMD_UART_S3
+#endif
+
+#ifdef CONFIG_SOFTSIM_ON_CHIP_SP
+  "/dev/ttyAT2",    // 6, ATCMD_UART_SP
+#else
+  NULL,             // 6, ATCMD_UART_SP
 #endif
 };
 
@@ -126,6 +132,11 @@ static const struct atcmd_table_s g_atcmd[] =
   {"AT+PTEST",  atcmd_ptest_handler,    ATCMD_UART_SERIAL},
 #endif
   {"AT+CCLK",   atcmd_cclk_handler,     ATCMD_UART_SERIAL},
+#ifdef CONFIG_SERVICES_SOFTSIM
+  {"AT+ESIM",   atcmd_esim_handler,     ATCMD_UART_SERIAL},
+#elif defined(CONFIG_SOFTSIM_ON_CHIP_SP)
+  {"AT+ESIM",   atcmd_remote_handler,   ATCMD_UART_SP},
+#endif
   {"AT+PENV",   atcmd_env_handler,      ATCMD_UART_SERIAL},
   {"AT+PSSL",   atcmd_ssl_handler,      ATCMD_UART_SERIAL},
   {"AT+TRB",    atcmd_trb_handler,      ATCMD_UART_SERIAL},
@@ -305,6 +316,11 @@ int atcmd_main(int argc, char *argv[])
 
   for (i = 0; i < ATCMD_NUARTS; i++)
     {
+      if (!g_names[i])
+        {
+          continue;
+        }
+
       g_uarts[i].fd = open(g_names[i], O_RDWR);
       if (g_uarts[i].fd < 0)
         {

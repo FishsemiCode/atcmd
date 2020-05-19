@@ -309,6 +309,7 @@ int atcmd_main(int argc, char *argv[])
 {
   struct pollfd fds[ATCMD_NUARTS];
   int i, ret = -EINVAL;
+  int nfds = 0;
 
   pty_register(0);
 
@@ -327,21 +328,22 @@ int atcmd_main(int argc, char *argv[])
           goto errout;
         }
 
-      fds[i].fd     = g_uarts[i].fd;
-      fds[i].events = POLLIN;
+      fds[nfds].fd     = g_uarts[i].fd;
+      fds[nfds].events = POLLIN;
+      nfds++;
     }
 
   unlockpt(g_uarts[ATCMD_UART_APP].fd);
 
   while (1)
     {
-      ret = poll(fds, ATCMD_NUARTS, -1);
+      ret = poll(fds, nfds, -1);
       if (ret <= 0)
         {
           continue;
         }
 
-      for (i = 0; i < ATCMD_NUARTS; i++)
+      for (i = 0; i < nfds; i++)
         {
           if (fds[i].revents == POLLIN)
             {
@@ -388,7 +390,7 @@ int atcmd_main(int argc, char *argv[])
     }
 
 errout:
-  for (i = 0; i < ATCMD_NUARTS; i++)
+  for (i = 0; i < nfds; i++)
     {
       if (g_uarts[i].fd > 0)
         {

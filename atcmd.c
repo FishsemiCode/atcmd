@@ -308,6 +308,7 @@ int atcmd_main(int argc, char *argv[])
 #endif
 {
   struct pollfd fds[ATCMD_NUARTS];
+  int fdx[ATCMD_NUARTS];
   int i, ret = -EINVAL;
   int nfds = 0;
 
@@ -330,6 +331,7 @@ int atcmd_main(int argc, char *argv[])
 
       fds[nfds].fd     = g_uarts[i].fd;
       fds[nfds].events = POLLIN;
+      fdx[nfds]        = i;
       nfds++;
     }
 
@@ -347,7 +349,8 @@ int atcmd_main(int argc, char *argv[])
         {
           if (fds[i].revents == POLLIN)
             {
-              struct atcmd_uart_s *uart = &g_uarts[i];
+              int idx = fdx[i];
+              struct atcmd_uart_s *uart = &g_uarts[idx];
               int len;
 
               uart->len +=
@@ -361,12 +364,12 @@ int atcmd_main(int argc, char *argv[])
                   break;
                 }
 
-              if (i == ATCMD_UART_SERIAL)
+              if (idx == ATCMD_UART_SERIAL)
                 {
                   len = atcmd_serial_handler(uart);
                 }
 #ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
-              else if (i == ATCMD_UART_S2 || i == ATCMD_UART_S3)
+              else if (idx == ATCMD_UART_S2 || idx == ATCMD_UART_S3)
                 {
                   len = atcmd_serial_chiptest_handler(uart);
                 }
@@ -383,7 +386,7 @@ int atcmd_main(int argc, char *argv[])
                 {
                   uart->len = 0;
                   _err("%s: idx %d, ERROR response msg: [%s]\n",
-                          __func__, i, uart->buf);
+                          __func__, idx, uart->buf);
                 }
             }
         }
@@ -392,9 +395,11 @@ int atcmd_main(int argc, char *argv[])
 errout:
   for (i = 0; i < nfds; i++)
     {
-      if (g_uarts[i].fd > 0)
+      int idx = fdx[i];
+
+      if (g_uarts[idx].fd > 0)
         {
-          close(g_uarts[i].fd);
+          close(g_uarts[idx].fd);
         }
     }
 

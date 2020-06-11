@@ -34,5 +34,5 @@
 ############################################################################
 
 ifeq ($(CONFIG_SERVICES_ATCMD),y)
-CONFIGURED_APPS += external/services/atcmd
+CONFIGURED_APPS += $(APPDIR)/external/services/atcmd
 endif

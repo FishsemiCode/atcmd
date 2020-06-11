@@ -53,6 +53,6 @@ endif
 
 CFLAGS_STR := "$(CFLAGS)"
 
-PROGNAME = atcmd$(EXEEXT)
+PROGNAME = atcmd
 
 include $(APPDIR)/Application.mk

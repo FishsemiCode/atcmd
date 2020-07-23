@@ -428,6 +428,9 @@ void atcmd_ipr_handler(int fd, const char *cmd, char *param)
       goto out;
     }
 
+  dprintf(fd, "\r\nOK\r\n");  /* response ok before set reg by old speed. */
+  usleep(10000);              /* 4ms at least for response ok successfully. */
+
   ioctl(ft, TCGETS, (unsigned long)&term);
   if (ret == 2)
     {
@@ -450,13 +453,13 @@ void atcmd_ipr_handler(int fd, const char *cmd, char *param)
       putreg32(0x08012d, 0xb2010084);
       putreg32(0x103240, 0xb2010010);
     }
-
   term.c_speed = rate;
   ioctl(ft, TCSETS, (unsigned long)&term);
 
   close(ft);
+  return;
 out:
-  dprintf(fd, "\r\n%s\r\n", ret >= 0 ? "OK" : "ERROR");
+  dprintf(fd, "\r\nERROR\r\n");
 }
 
 void atcmd_trb_handler(int fd, const char *cmd, char *param)

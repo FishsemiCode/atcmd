@@ -144,6 +144,7 @@ static const struct atcmd_table_s g_atcmd[] =
   {"AT+IFC",    atcmd_ifc_handler,      ATCMD_UART_SERIAL},
   {"AT+IPR",    atcmd_ipr_handler,      ATCMD_UART_SERIAL},
   {"AT+PF",     atcmd_files_handler,    ATCMD_UART_SERIAL},
+  {"AT+PMSET",  atcmd_pmset_handler,    ATCMD_UART_SERIAL},
   {"AT"CONFIG_SERVICES_ATCMD_APP_PREFIX,   atcmd_remote_handler,   ATCMD_UART_APP},
   {"AT",        atcmd_remote_handler,   ATCMD_UART_MODEM},
 };

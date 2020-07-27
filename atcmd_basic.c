@@ -466,3 +466,62 @@ void atcmd_trb_handler(int fd, const char *cmd, char *param)
 {
   boardctl(BOARDIOC_RESET, 0);
 }
+
+static int atcmd_pmset_parser(char *str, int *set)
+{
+  int tmp;
+
+  str += strlen("at+pmset");
+
+  if (*str != '=')
+    {
+      return -EINVAL;
+    }
+
+  str++;
+  if (*str == '\0' || *str == '?')
+    {
+      return 2;
+    }
+
+  tmp = strtoul(str, &str, 0);
+  if ((tmp < 0) || (tmp > 1))
+    {
+      return -EINVAL;
+    }
+
+  *set = tmp;
+
+  return 0;
+}
+
+/*
+ at+pmset=<set>
+ <set> 1  pmstay idle
+       0  relax idle
+*/
+
+void atcmd_pmset_handler(int fd, const char *cmd, char *param)
+{
+  int  set = 0;
+  int ret = 0;
+
+  ret = atcmd_pmset_parser(param, &set);
+  if (ret < 0)
+    {
+      goto out;
+    }
+
+  if (set == 1)
+    {
+      pm_stay(PM_IDLE_DOMAIN, PM_IDLE);
+    }
+  else
+    {
+      pm_relax(PM_IDLE_DOMAIN, PM_IDLE);
+    }
+
+out:
+    dprintf(fd, "\r\n%s\r\n", ret >= 0 ? "OK" : "ERROR");
+}
+

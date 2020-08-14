@@ -61,6 +61,7 @@
  ****************************************************************************/
 
 # define putreg32(v,a)        (*(volatile uint32_t *)(a) = (v))
+#define ATCMD_DMCFG_FILE_PATH "/data/dmcfg"
 
 /****************************************************************************
  * Private Types
@@ -525,3 +526,92 @@ out:
     dprintf(fd, "\r\n%s\r\n", ret >= 0 ? "OK" : "ERROR");
 }
 
+static int atcmd_dmcfg_parser(char *str, int *set)
+{
+  int tmp;
+
+  str += strlen("at+dmcfg");
+
+  if (*str == '?')
+    {
+      *set = 2;
+      return 0;
+    }
+
+  if (*str != '=')
+    {
+      return -EINVAL;
+    }
+
+  str++;
+  if (*str == '\0' || *str == '?')
+    {
+      return -EINVAL;
+    }
+
+  tmp = strtoul(str, &str, 0);
+  if ((tmp < 0) || (tmp > 1))
+    {
+      return -EINVAL;
+    }
+
+  *set = tmp;
+
+  return 0;
+}
+
+/*
+ at+dmcfg=<set>
+ <set> 0  disable DM auto reg
+       1  enable DM auto reg
+*/
+
+void atcmd_dmcfg_handler(int fd, const char *cmd, char *param)
+{
+  int  set = 0;
+  int ret = 0;
+
+  ret = atcmd_dmcfg_parser(param, &set);
+  if (ret < 0)
+    {
+      goto out;
+    }
+
+  if (set == 0)
+    {
+      int fd;
+      fd = open(ATCMD_DMCFG_FILE_PATH, O_RDWR | O_CREAT);
+      if (fd < 0)
+        {
+          syslog(LOG_INFO, "open dmcfg error\n");
+          ret = -1;
+          goto out;
+        }
+      close(fd);
+    }
+  else if (set == 1)
+    {
+      unlink(ATCMD_DMCFG_FILE_PATH);
+    }
+  else if (set == 2)
+    {
+      int fd1;
+      fd1 = open(ATCMD_DMCFG_FILE_PATH, O_RDONLY);
+      if (fd1 < 0)
+        {
+          dprintf(fd, "\r\n+DMCFG:1\r\n");
+        }
+      else
+        {
+          dprintf(fd, "\r\n+DMCFG:0\r\n");
+          close(fd1);
+        }
+    }
+  else
+    {
+      ret = -1;
+    }
+
+out:
+    dprintf(fd, "\r\n%s\r\n", ret >= 0 ? "OK" : "ERROR");
+}

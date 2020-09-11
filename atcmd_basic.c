@@ -579,15 +579,15 @@ void atcmd_dmcfg_handler(int fd, const char *cmd, char *param)
 
   if (set == 0)
     {
-      int fd;
-      fd = open(ATCMD_DMCFG_FILE_PATH, O_RDWR | O_CREAT);
-      if (fd < 0)
+      int fd1;
+      fd1 = open(ATCMD_DMCFG_FILE_PATH, O_RDWR | O_CREAT);
+      if (fd1 < 0)
         {
           syslog(LOG_INFO, "open dmcfg error\n");
           ret = -1;
           goto out;
         }
-      close(fd);
+      close(fd1);
     }
   else if (set == 1)
     {
@@ -595,16 +595,16 @@ void atcmd_dmcfg_handler(int fd, const char *cmd, char *param)
     }
   else if (set == 2)
     {
-      int fd1;
-      fd1 = open(ATCMD_DMCFG_FILE_PATH, O_RDONLY);
-      if (fd1 < 0)
+      int fd2;
+      fd2 = open(ATCMD_DMCFG_FILE_PATH, O_RDONLY);
+      if (fd2 < 0)
         {
           dprintf(fd, "\r\n+DMCFG:1\r\n");
         }
       else
         {
           dprintf(fd, "\r\n+DMCFG:0\r\n");
-          close(fd1);
+          close(fd2);
         }
     }
   else

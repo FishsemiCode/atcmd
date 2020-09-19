@@ -66,7 +66,6 @@
 #define ATCMD_UART_S2            4
 #define ATCMD_UART_S3            5
 #define ATCMD_UART_SP            6
-#define ATCMD_NUARTS             7
 
 /****************************************************************************
  * Private Types
@@ -95,9 +94,7 @@ static int atcmd_serial_chiptest_handler(struct atcmd_uart_s *serial);
  * Private Data
  ****************************************************************************/
 
-static struct atcmd_uart_s g_uarts[ATCMD_NUARTS];
-
-static const char *g_names[ATCMD_NUARTS] =
+static const char *g_names[] =
 {
   "/dev/ttyS0",     // 0, ATCMD_UART_SERIAL
   "/dev/ttyGPS",    // 1, ATCMD_UART_GPS
@@ -107,17 +104,16 @@ static const char *g_names[ATCMD_NUARTS] =
 #ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
   "/dev/ttyS2",     // 4, ATCMD_UART_S2
   "/dev/ttyS3",     // 5, ATCMD_UART_S3
-#else
-  NULL,             // 4, ATCMD_UART_S2
-  NULL,             // 5, ATCMD_UART_S3
 #endif
 
 #ifdef CONFIG_SOFTSIM_ON_CHIP_SP
   "/dev/ttyAT2",    // 6, ATCMD_UART_SP
-#else
-  NULL,             // 6, ATCMD_UART_SP
 #endif
 };
+
+#define ATCMD_NUARTS ARRAY_SIZE(g_names)
+
+static struct atcmd_uart_s g_uarts[ATCMD_NUARTS];
 
 static const struct atcmd_table_s g_atcmd[] =
 {

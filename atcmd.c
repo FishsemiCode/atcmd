@@ -137,6 +137,7 @@ static const struct atcmd_table_s g_atcmd[] =
 #elif defined(CONFIG_SOFTSIM_ON_CHIP_SP)
   {"AT+ESIM",   atcmd_remote_handler,   ATCMD_UART_SP},
 #endif
+  {"AT+GPIO",   atcmd_gpio_handler,     ATCMD_UART_SERIAL},
   {"AT+PENV",   atcmd_env_handler,      ATCMD_UART_SERIAL},
   {"AT+PSSL",   atcmd_ssl_handler,      ATCMD_UART_SERIAL},
   {"AT+TRB",    atcmd_trb_handler,      ATCMD_UART_SERIAL},

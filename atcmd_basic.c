@@ -303,7 +303,7 @@ void atcmd_env_handler(int fd, const char *cmd, char *param)
 #ifdef CONFIG_MISC_RPMSG
           int fd_misc;
 
-          fd_misc = open("/dev/misc", 0);
+          fd_misc = open("/dev/miscsp", 0);
           if (fd_misc >= 0)
             {
               struct misc_remote_infowrite_s info =
@@ -343,7 +343,7 @@ void atcmd_flush_handler(int fd, const char *cmd, char *param)
 
   path = ++str;
 
-  fd_misc = open("/dev/misc", 0);
+  fd_misc = open("/dev/miscsp", 0);
   if (fd_misc >= 0)
     {
       struct misc_remote_ramflush_s flush =

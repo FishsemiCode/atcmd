@@ -62,6 +62,10 @@
 #define ATCMD_GPIO_WRITE        (0)
 #define ATCMD_GPIO_NAME_LENGTH  (16)
 
+#define ATCMD_GPIO_NOPULL       (0)
+#define ATCMD_GPIO_PULLUP       (1)
+#define ATCMD_GPIO_PULLDOWN     (2)
+
 /****************************************************************************
  * Private Function Prototypes
  ****************************************************************************/
@@ -70,6 +74,12 @@ static int gpio_port_register(int port, enum gpio_pintype_e type);
 static int gpio_port_read(int port, bool *read_val);
 static int gpio_port_write(int port, bool write_val);
 static int gpio_port_unregister(int port,  enum gpio_pintype_e type);
+
+/****************************************************************************
+ * Private variables
+ ****************************************************************************/
+
+static uint8_t g_state;
 
 /****************************************************************************
  * Private Funtions
@@ -123,6 +133,15 @@ static int gpio_port_read(int port, bool *read_val)
   char dev_name[ATCMD_GPIO_NAME_LENGTH];
 
   snprintf(dev_name, ATCMD_GPIO_NAME_LENGTH, "/dev/gpin%u", (unsigned int)port);
+
+  /* Set specify GPIO state */
+
+  if (g_state == ATCMD_GPIO_PULLUP)
+    PINCTRL_SETDT(g_pinctrl[0], port, BIAS_PULLUP);
+  else if(g_state == ATCMD_GPIO_PULLDOWN)
+    PINCTRL_SETDT(g_pinctrl[0], port, BIAS_PULLDOWN);
+  else
+    PINCTRL_SETDT(g_pinctrl[0], port, BIAS_DISABLE);
 
   fd = open(dev_name, O_RDONLY);
   if (fd < 0)
@@ -213,6 +232,23 @@ void atcmd_gpio_handler(int fd, const char *cmd, char *param)
   if ((str = strchr(str, '?')) != NULL)
     {
       dir = ATCMD_GPIO_READ;
+      str++;
+      if (strcmp(str,"pullup") == 0)
+        {
+          g_state = ATCMD_GPIO_PULLUP;
+        }
+      else if(strcmp(str,"pulldown") == 0)
+        {
+          g_state = ATCMD_GPIO_PULLDOWN;
+        }
+      else if(strcmp(str,"") == 0 || strcmp(str,"nopull") ==0)
+        {
+          g_state = ATCMD_GPIO_NOPULL;
+        }
+      else
+        {
+          goto out;
+        }
       *str = '\0';
     }
 
@@ -229,6 +265,7 @@ void atcmd_gpio_handler(int fd, const char *cmd, char *param)
       ret = gpio_port_register(gpio, GPIO_INPUT_PIN);
       ret |= gpio_port_read(gpio, &gpio_val);
       printf("gpio %d read val = %d\n", gpio, gpio_val);
+      ret = gpio_port_unregister(gpio, GPIO_INPUT_PIN);
     }
   else
     {
@@ -236,6 +273,7 @@ void atcmd_gpio_handler(int fd, const char *cmd, char *param)
       gpio_val = (bool)level;
       ret |= gpio_port_write(gpio, gpio_val);
       printf("gpio %d write val = %d\n", gpio, gpio_val);
+      ret = gpio_port_unregister(gpio, GPIO_OUTPUT_PIN);
     }
 
 out:

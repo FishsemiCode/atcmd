@@ -95,6 +95,8 @@ extern void atcmd_ssl_handler(int fd, const char *cmd, char *param);
 extern void atcmd_pmset_handler(int fd, const char *cmd, char *param);
 extern void atcmd_dmcfg_handler(int fd, const char *cmd, char *param);
 extern void atcmd_gpio_handler(int fd, const char* cmd, char *param);
+extern void atcmd_pon_handler(int fd, const char* cmd, char *param);
+extern void atcmd_pwr_handler(int fd, const char* cmd, char *param);
 
 #ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
 extern void atcmd_ptest_handler(int fd, const char *cmd, char *param);

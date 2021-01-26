@@ -107,6 +107,9 @@ static int gpio_port_register(int port, enum gpio_pintype_e type)
   struct stat buf;
   int ret;
 
+  /* Set mux pin to GPIO */
+
+  PINCTRL_SELGPIO(g_pinctrl[0], port);
   if (type == GPIO_INPUT_PIN)
     {
       snprintf(dev_name, ATCMD_GPIO_NAME_LENGTH, "/dev/gpin%u", (unsigned int)port);

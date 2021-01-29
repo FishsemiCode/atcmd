@@ -267,7 +267,7 @@ void atcmd_gpio_handler(int fd, const char *cmd, char *param)
     {
       ret = gpio_port_register(gpio, GPIO_INPUT_PIN);
       ret |= gpio_port_read(gpio, &gpio_val);
-      printf("gpio %d read val = %d\n", gpio, gpio_val);
+      dprintf(fd, "\r\ngpio%d read val = %d \r\n", gpio, gpio_val);
       ret = gpio_port_unregister(gpio, GPIO_INPUT_PIN);
     }
   else
@@ -275,7 +275,7 @@ void atcmd_gpio_handler(int fd, const char *cmd, char *param)
       ret = gpio_port_register(gpio, GPIO_OUTPUT_PIN);
       gpio_val = (bool)level;
       ret |= gpio_port_write(gpio, gpio_val);
-      printf("gpio %d write val = %d\n", gpio, gpio_val);
+      dprintf(fd, "\r\ngpio%d write = %d \r\n", gpio, gpio_val);
       ret = gpio_port_unregister(gpio, GPIO_OUTPUT_PIN);
     }
 

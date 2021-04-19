@@ -86,7 +86,7 @@ static void atcmd_remote_handler(int fd, const char *cmd, char *param);
 
 static int atcmd_serial_handler(struct atcmd_uart_s *serial);
 static int atcmd_response_handler(int outfd, struct atcmd_uart_s *uart);
-#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
+#if defined(CONFIG_SERVICES_ATCMD_CHIP_TEST) && (CONFIG_16550_UART2_BAUD == 9600)
 static int atcmd_serial_chiptest_handler(struct atcmd_uart_s *serial);
 #endif
 
@@ -101,7 +101,7 @@ static const char *g_names[] =
   "/dev/ttyAT",     // 2, ATCMD_UART_MODEM
   "/dev/pty0",      // 3, ATCMD_UART_APP
 
-#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
+#if defined(CONFIG_SERVICES_ATCMD_CHIP_TEST) && (CONFIG_16550_UART2_BAUD == 9600)
   "/dev/ttyS2",     // 4, ATCMD_UART_S2
   "/dev/ttyS3",     // 5, ATCMD_UART_S3
 #endif
@@ -262,7 +262,7 @@ static int atcmd_check_error_char(char *buf, int len)
   return 0;
 }
 
-#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
+#if defined(CONFIG_SERVICES_ATCMD_CHIP_TEST) && (CONFIG_16550_UART2_BAUD == 9600)
 static int atcmd_serial_chiptest_handler(struct atcmd_uart_s *serial)
 {
   char *pbuf, *end;
@@ -369,7 +369,7 @@ int atcmd_main(int argc, char *argv[])
                 {
                   len = atcmd_serial_handler(uart);
                 }
-#ifdef CONFIG_SERVICES_ATCMD_CHIP_TEST
+#if defined(CONFIG_SERVICES_ATCMD_CHIP_TEST) && (CONFIG_16550_UART2_BAUD == 9600)
               else if (idx == ATCMD_UART_S2 || idx == ATCMD_UART_S3)
                 {
                   len = atcmd_serial_chiptest_handler(uart);

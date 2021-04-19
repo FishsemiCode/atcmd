@@ -141,11 +141,6 @@ static void atcmd_ptest_spi_handler(int fd, const char *cmd, char *param)
     }
 
   ret = mount("/dev/ctdata", target, "littlefs", 0, "autoformat");
-  if (ret)
-    {
-      ret = 100;
-      goto end;
-    }
 
   if (NULL != (fp = fopen(param, "r")))
     {

@@ -57,7 +57,11 @@
  * Pre-processor definitions
  ****************************************************************************/
 
+#ifdef CONFIG_SERVICES_SOFTSIM
 #define ATCMD_BUFMAX            3072
+#else
+#define ATCMD_BUFMAX            1024
+#endif
 
 #define ATCMD_UART_SERIAL        0
 #define ATCMD_UART_GPS           1
